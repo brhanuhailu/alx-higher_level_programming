@@ -1,3 +1,2 @@
-#!/usr/bin/python3
-$PYFILE=("Python Script");
-print($PYFILE);
+#!/usr/bin
+python3 $PYFILE
