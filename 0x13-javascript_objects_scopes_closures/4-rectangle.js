@@ -1,5 +1,4 @@
 #!/usr/bin/node
-// Class for rectangle with height and width parameters and various methods
 
 module.exports = class Rectangle {
   constructor (w, h) {
@@ -10,18 +9,14 @@ module.exports = class Rectangle {
   }
 
   print () {
-    for (let i = 0; i < this.height; i++) {
-      for (let j = 0; j < this.width; j++) {
-        process.stdout.write('X');
-      }
-      process.stdout.write('\n');
-    }
+    console.log(('X'.repeat(this.width) + '\n').repeat(this.height).split('')
+      .slice(0, -1).join(''));
   }
 
   rotate () {
-    let temp = this.height;
-    this.height = this.width;
-    this.width = temp;
+    const tmp = this.width;
+    this.width = this.height;
+    this.height = tmp;
   }
 
   double () {
