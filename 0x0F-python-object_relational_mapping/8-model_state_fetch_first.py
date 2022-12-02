@@ -1,35 +1,21 @@
 #!/usr/bin/python3
-# print first state objects from the database
+""" Prints the first State object from the database hbtn_0e_6_usa."""
+
+from sys import argv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from model_state import Base, State
 
 if __name__ == "__main__":
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import Session
-    from sys import argv
-    from model_state import Base, State
-    from sqlalchemy.engine.url import URL
+    engine = create_engine("mysql+mysqldb://{}:{}@localhost/{}"
+                           .format(argv[1], argv[2], argv[3]),
+                           pool_pre_ping=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-    # url
-    url = {'drivername': 'mysql+mysqldb',
-           'host': 'localhost',
-           'port': '3306',
-           'username': argv[1],
-           'password': argv[2],
-           'database': argv[3]}
-
-    c_url = URL(**url)
-
-    # create engine, metadata for stored objects
-    engine = create_engine(c_url, pool_pre_ping=True)
-    Base.metadata.create_all(engine)
-
-    # session
-    session = Session(engine)
-
-    try:
-        first = session.query(State).first()
-        print("{}: {}".format(first.id, first.name))
-    except:
-        print('Nothing')
-
-    # close
+    state = session.query(State).order_by(State.id).first()
+    if state is None:
+        print("Nothing")
+    else:
+        print("{}: {}".format(state.id, state.name))
     session.close()

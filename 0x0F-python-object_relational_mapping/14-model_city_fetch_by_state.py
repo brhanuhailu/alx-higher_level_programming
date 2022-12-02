@@ -1,28 +1,24 @@
 #!/usr/bin/python3
-""" prints all City objects from the database"""
+"""
+Python file similar to model_state.py named model_city.py that contains
+the class definition of a City.
+"""
 
+from sys import argv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from model_state import State
+from model_city import City
 
 if __name__ == "__main__":
-    from sqlalchemy.engine import create_engine
-    from sqlalchemy.engine.url import URL
-    from sqlalchemy.orm import Session
-    from model_state import Base, State
-    from model_city import City
-    from sys import argv
+    engine = create_engine("mysql+mysqldb://{}:{}@localhost/{}"
+                           .format(argv[1], argv[2], argv[3]),
+                           pool_pre_ping=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-    db = {'drivername': 'mysql+mysqldb',
-          'host': 'localhost',
-          'port': '3306',
-          'username': argv[1],
-          'password': argv[2],
-          'database': argv[3]}
-
-    url = URL(**db)
-    engine = create_engine(url, pool_pre_ping=True)
-    Base.metadata.create_all(engine)
-
-    session = Session(engine)
-    for state, city in session.query(State, City)\
-                              .filter(State.id == City.state_id).all():
+    for city, state in session.query(City, State) \
+                              .filter(City.state_id == State.id) \
+                              .order_by(City.id):
         print("{}: ({}) {}".format(state.name, city.id, city.name))
     session.close()
